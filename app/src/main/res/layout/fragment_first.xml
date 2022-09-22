@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="64dp"
+                android:text="1"
                 android:hint="number"
                 android:inputType="number" />
 
@@ -68,6 +69,8 @@
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/et_to"
+                android:enabled="false"
+                android:text="0"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

@@ -8,7 +8,7 @@ class LiveDataState<T> : MutableLiveData<DataState<T>>() {
         postValue(DataState<T>().getLoading())
     }
 
-    fun postSuccess(data : T){
+    fun postSuccess(data : T?){
         postValue(DataState<T>().getSuccess(data))
     }
 
@@ -37,7 +37,7 @@ class DataState<T> {
         return this
     }
 
-    fun getSuccess(data : T) : DataState<T> {
+    fun getSuccess(data : T?) : DataState<T> {
 
         this.dataStatus = DataStatus.SUCCESS
         this.data = data

@@ -21,7 +21,7 @@ abstract class BaseViewModel : ViewModel() {
         liveData.postError(t)
     }
 
-    fun <T> publishResult(liveData: LiveDataState<T>, data: T) {
+    fun <T> publishResult(liveData: LiveDataState<T>, data: T?) {
         requestInProgress = false
         liveData.postSuccess(data)
     }

@@ -1,6 +1,8 @@
 package com.example.geminiecurrencydemo.view
 
 import androidx.lifecycle.viewModelScope
+import com.example.geminiecurrencydemo.network.models.ConvertCurrencyResponse
+import com.example.geminiecurrencydemo.network.models.Currency
 import com.example.geminiecurrencydemo.network.models.Symbols
 import com.example.geminiecurrencydemo.repository.FirstRepository
 import com.example.geminiecurrencydemo.utils.BaseViewModel
@@ -17,9 +19,10 @@ class FirstViewModel @Inject constructor(
 ) :
     BaseViewModel() {
 
-    private val allSymbolsList = LiveDataState<ArrayList<String?>>()
+    private val allSymbolsList = LiveDataState<ArrayList<Currency>>()
+    private val convertResponseData = LiveDataState<ConvertCurrencyResponse>()
 
-    fun getAllSymbols(): LiveDataState<ArrayList<String?>> {
+    fun getAllSymbols(): LiveDataState<ArrayList<Currency>> {
 
         publishLoading(allSymbolsList)
 
@@ -40,18 +43,39 @@ class FirstViewModel @Inject constructor(
         return allSymbolsList
     }
 
-    private fun getCurrencyList(symbols: Symbols?): ArrayList<String?> {
-        val list = ArrayList<String?>()
-        list.add(symbols?.USD)
-        list.add(symbols?.AED)
-        list.add(symbols?.KWD)
-        list.add(symbols?.EUR)
-        list.add(symbols?.EGP)
-        list.add(symbols?.JEP)
-        list.add(symbols?.ALL)
-        list.add(symbols?.BTC)
-        list.add(symbols?.XAG)
-        list.add(symbols?.GBP)
+    private fun getCurrencyList(symbols: Symbols?): ArrayList<Currency> {
+        val list = ArrayList<Currency>()
+        list.add(Currency(name = symbols?.USD.toString(), "USD"))
+        list.add(Currency(name = symbols?.AED.toString(), "AED"))
+        list.add(Currency(name = symbols?.EUR.toString(), "EUR"))
+        list.add(Currency(name = symbols?.EGP.toString(), "EGP"))
+        list.add(Currency(name = symbols?.GBP.toString(), "GBP"))
+        list.add(Currency(name = symbols?.KWD.toString(), "KWD"))
+        list.add(Currency(name = symbols?.JEP.toString(), "JEP"))
         return list
+    }
+
+    fun convertCurrency(
+        from: String,
+        to: String,
+        amount: String
+    ): LiveDataState<ConvertCurrencyResponse> {
+        publishLoading(convertResponseData)
+
+        if (!connectionManager.isNetworkAvailable) {
+            publishNoInternet(convertResponseData)
+            return convertResponseData
+        }
+
+        viewModelScope.launch {
+            val result = repository.convertCurrency(from, to, amount)
+            if (result.isSuccessful) {
+                publishResult(convertResponseData, result.body())
+            } else {
+                publishError(convertResponseData, Throwable(result.message()))
+            }
+        }
+
+        return convertResponseData
     }
 }

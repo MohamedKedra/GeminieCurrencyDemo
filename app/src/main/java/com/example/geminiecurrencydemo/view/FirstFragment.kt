@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -14,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.geminiecurrencydemo.R
 import com.example.geminiecurrencydemo.databinding.FragmentFirstBinding
+import com.example.geminiecurrencydemo.network.models.Currency
 import com.example.geminiecurrencydemo.utils.DataState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_first.*
@@ -59,8 +59,8 @@ class FirstFragment : Fragment() {
                 DataState.DataStatus.SUCCESS -> {
                     showHideLoading()
                     it.getData()?.let { list ->
-                        initDropdownList(list, binding.currencyFrom)
-                        initDropdownList(list, binding.currencyTo)
+                        initDropdownList(list, binding.currencyFrom, isFromCurrency = true)
+                        initDropdownList(list, binding.currencyTo, isFromCurrency = false)
                     }
                 }
                 DataState.DataStatus.ERROR -> {
@@ -72,16 +72,55 @@ class FirstFragment : Fragment() {
 
             }
         }
-
     }
 
-    private fun initDropdownList(currencies: ArrayList<String?>, sp_currencies: AppCompatSpinner) {
+
+    private fun observeConvertCurrency(fromCurrency: String, toCurrency: String, amount: String) {
+
+        firstViewModel.convertCurrency(fromCurrency, toCurrency, amount)
+            .observe(viewLifecycleOwner) { response ->
+
+                when (response.getStatus()) {
+
+                    DataState.DataStatus.LOADING -> {
+                        showHideLoading(isLoading = true)
+                    }
+                    DataState.DataStatus.SUCCESS -> {
+                        showHideLoading()
+                        response.getData()?.let {
+                            binding.etTo.setText(it.result?.toString())
+                        }
+                    }
+                    DataState.DataStatus.ERROR -> {
+                        showHideLoading(
+                            hasError = true,
+                            txt = response.getError()?.message.toString()
+                        )
+                    }
+                    DataState.DataStatus.NO_INTERNET -> {
+                        showHideLoading(
+                            hasError = true,
+                            txt = "No Internet Connection"
+                        )
+                    }
+                }
+            }
+    }
+
+    private fun initDropdownList(
+        currencies: ArrayList<Currency>,
+        sp_currencies: AppCompatSpinner,
+        isFromCurrency: Boolean
+    ): AppCompatSpinner {
+
+        val names = ArrayList<String>()
+        currencies.forEach { names.add(it.code) }
 
         val adapter =
             ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                currencies
+                names
             )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         sp_currencies.adapter = adapter
@@ -92,13 +131,27 @@ class FirstFragment : Fragment() {
                 view: View, position: Int, id: Long
             ) {
 
+                val item = parent.getItemAtPosition(position).toString()
+                if (isFromCurrency) {
+                    observeConvertCurrency(
+                        item,
+                        binding.currencyTo.selectedItem.toString(),
+                        binding.etFrom.text.toString()
+                    )
+                } else {
+                    observeConvertCurrency(
+                        binding.currencyFrom.selectedItem.toString(),
+                        item,
+                        binding.etFrom.text.toString()
+                    )
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // write code to perform some action
             }
         }
-
+        return sp_currencies
     }
 
     private fun showHideLoading(
@@ -106,13 +159,11 @@ class FirstFragment : Fragment() {
         hasError: Boolean = false,
         txt: String = ""
     ) {
-
         ll_convert.isVisible = !(isLoading || hasError)
         ll_loading.isVisible = isLoading || hasError
         pb_progressbar.isVisible = isLoading
         tv_error.isVisible = hasError
         tv_error.text = txt
-
     }
 
     override fun onDestroyView() {
