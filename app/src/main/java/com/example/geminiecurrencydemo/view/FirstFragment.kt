@@ -1,6 +1,8 @@
 package com.example.geminiecurrencydemo.view
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,8 +44,36 @@ class FirstFragment : Fragment() {
 
         initObservers()
 
-        binding.btnDetails.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+        binding.apply {
+
+            btnDetails.setOnClickListener {
+                findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+            }
+
+            btnSwap.setOnClickListener {
+                val swap = currencyFrom.selectedItemPosition
+                currencyFrom.setSelection(currencyTo.selectedItemPosition)
+                currencyTo.setSelection(swap)
+            }
+
+            etFrom.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                }
+
+                override fun onTextChanged(txt: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    observeConvertCurrency(
+                        currencyFrom.selectedItem.toString(),
+                        currencyTo.selectedItem.toString(),
+                        txt?.toString()!!
+                    )
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                }
+
+            })
+
         }
     }
 
