@@ -7,72 +7,90 @@
     tools:context=".view.FirstFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ll_convert"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_marginHorizontal="32dp">
 
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/currency_from"
-            android:layout_width="80dp"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_from"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_swap">
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/currency_from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="16dp"/>
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_from"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="64dp"
+                android:hint="number"
+                android:inputType="number" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_swap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginVertical="16dp"
             android:text="Swap"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/currency_to"
-            app:layout_constraintStart_toEndOf="@+id/currency_from"
-            android:layout_marginHorizontal="32dp"/>
-
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/currency_to"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/ll_from"/>
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:layout_width="100dp"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_to"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/currency_from"
-            app:layout_constraintTop_toBottomOf="@id/currency_from"
-            android:layout_marginVertical="24dp"
-            android:hint="number"
-            android:inputType="number"
-            android:id="@+id/et_from"/>
+            android:layout_marginVertical="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/btn_swap">
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/currency_to"
-            app:layout_constraintTop_toBottomOf="@id/currency_to"
-            android:layout_marginVertical="24dp"
-            android:hint="number"
-            android:inputType="number"
-            android:id="@+id/et_to"/>
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/currency_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="16dp" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_to"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="64dp"
+                android:hint="number"
+                android:inputType="number" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/btn_swap"
-            app:layout_constraintStart_toEndOf="@id/currency_from"
-            app:layout_constraintEnd_toStartOf="@id/currency_to"
             android:layout_marginVertical="48dp"
             android:text="Details"
-            android:id="@+id/btn_details"
-            />
+            app:layout_constraintTop_toBottomOf="@id/ll_to"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/ll_loading"
+        layout="@layout/loading_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
