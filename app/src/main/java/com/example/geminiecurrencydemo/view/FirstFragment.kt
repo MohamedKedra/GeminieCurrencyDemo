@@ -30,6 +30,11 @@ class FirstFragment : Fragment() {
 
     private val firstViewModel by viewModels<FirstViewModel>()
 
+    companion object {
+
+        var hasBack = false
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,11 +47,15 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initObservers()
+
+        if (!hasBack) {
+            initObservers()
+        }
 
         binding.apply {
 
             btnDetails.setOnClickListener {
+                hasBack = true
                 findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
             }
 
@@ -62,11 +71,15 @@ class FirstFragment : Fragment() {
                 }
 
                 override fun onTextChanged(txt: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    observeConvertCurrency(
-                        currencyFrom.selectedItem.toString(),
-                        currencyTo.selectedItem.toString(),
-                        txt?.toString()!!
-                    )
+                    val from = currencyFrom.selectedItem
+                    val to = currencyTo.selectedItem
+                    if (from != null && to != null) {
+                        observeConvertCurrency(
+                            currencyFrom.selectedItem.toString(),
+                            currencyTo.selectedItem.toString(),
+                            txt?.toString()!!
+                        )
+                    }
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
@@ -79,7 +92,6 @@ class FirstFragment : Fragment() {
 
 
     private fun initObservers() {
-
         firstViewModel.getAllSymbols().observe(viewLifecycleOwner) {
             when (it.getStatus()) {
 
